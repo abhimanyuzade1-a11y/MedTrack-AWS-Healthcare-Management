@@ -1,8 +1,26 @@
 # MedTrack – AWS Cloud-Enabled Healthcare Management System
 
-MedTrack is a SkillWallet AWS Cloud Practitioner capstone application. It provides patient and doctor workflows for appointments and visit records, with a local Flask runtime and a boto3 DynamoDB repository prepared for a later AWS deployment.
+> A cloud-ready healthcare management platform with separate Patient and Doctor portals.
 
-> **Deployment status:** The application has not been deployed to AWS. The project owner reports that the AWS console currently shows the account activation/setup page. No DynamoDB table, SNS topic, IAM role, or EC2 instance has been created for this project.
+## 🚀 Live Demo
+
+👉 **[Open MedTrack Live Demo](https://medtrack-healthcare.onrender.com)**
+
+## 📂 GitHub Repository
+
+👉 **[View Source Code](https://github.com/abhimanyuzade1-a11y/MedTrack-AWS-Healthcare-Management)**
+
+## 🔐 Demo Credentials
+
+### Patient
+- Email: `demo.patient@medtrack.test`
+- Password: `MedTrackDemo-2026!`
+
+### Doctor
+- Email: `demo.doctor@medtrack.test`
+- Password: `MedTrackDemo-2026!`
+
+> These are synthetic demo accounts created only for project demonstration.
 
 ## Problem statement
 
