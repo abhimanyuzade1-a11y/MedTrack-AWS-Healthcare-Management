@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}MedTrack{% endblock %} · MedTrack</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/product.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="{% if current_user %}app-body{% endif %}">
+<nav class="navbar navbar-expand-lg navbar-light topbar">
+  <div class="container-fluid px-lg-4">
+    <a class="navbar-brand" href="{{ url_for('index') }}"><span class="brand-mark"><i class="bi bi-heart-pulse-fill"></i></span> MED<span>TRACK</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNav"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="topNav">
+      {% if current_user %}
+      <span class="navbar-text ms-auto me-3 d-none d-lg-inline"><i class="bi bi-shield-lock me-1"></i> {{ current_user.role|title }} care workspace</span>
+      <a class="btn btn-light btn-sm me-3" href="{{ url_for('patient.notifications') if current_user.role == 'patient' else url_for('doctor.notifications') }}"><i class="bi bi-bell"></i> Notifications</a>
+      <div class="dropdown"><button class="btn user-chip dropdown-toggle" data-bs-toggle="dropdown"><span class="avatar-small">{{ current_user.name[:1]|upper }}</span><span class="d-none d-sm-inline">{{ current_user.name }}</span></button>
+        <ul class="dropdown-menu dropdown-menu-end"><li><span class="dropdown-item-text text-muted small text-capitalize">{{ current_user.role }} account</span></li>
+          {% if current_user.role == 'patient' %}<li><a class="dropdown-item" href="{{ url_for('patient.profile') }}"><i class="bi bi-person me-2"></i>My profile</a></li>{% endif %}
+          <li><hr class="dropdown-divider"></li><li><form method="post" action="{{ url_for('auth.logout') }}"><input type="hidden" name="csrf_token" value="{{ csrf_token }}"><button class="dropdown-item text-danger"><i class="bi bi-box-arrow-right me-2"></i>Sign out</button></form></li>
+        </ul>
+      </div>
+      {% else %}
+      <div class="ms-auto d-flex gap-2 align-items-center"><a class="btn btn-outline-primary btn-sm" href="{{ url_for('auth.patient_login_portal') }}">Patient Login</a><a class="btn btn-outline-primary btn-sm" href="{{ url_for('auth.doctor_login') }}">Doctor Login</a><a class="btn btn-primary btn-sm" href="{{ url_for('auth.patient_register') }}">Create Patient Account</a></div>
+      {% endif %}
+    </div>
+  </div>
+</nav>
+{% if current_user %}
+<div class="layout-shell"><aside class="sidebar"><div class="sidebar-label">{{ current_user.role|upper }} PORTAL</div>
+  {% if current_user.role == 'patient' %}
+  <a class="side-link {{ 'active' if request.endpoint == 'patient.dashboard' }}" href="{{ url_for('patient.dashboard') }}"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+  <a class="side-link {{ 'active' if request.endpoint in ['patient.appointments','patient.book_appointment','patient.intake'] }}" href="{{ url_for('patient.appointments') }}"><i class="bi bi-calendar2-week"></i>Appointments</a>
+  <a class="side-link {{ 'active' if request.endpoint == 'patient.timeline' }}" href="{{ url_for('patient.timeline') }}"><i class="bi bi-activity"></i>Health timeline</a>
+  <a class="side-link {{ 'active' if request.endpoint == 'patient.health_snapshot' }}" href="{{ url_for('patient.health_snapshot') }}"><i class="bi bi-heart-pulse"></i>Health snapshot</a>
+  <a class="side-link {{ 'active' if request.endpoint == 'patient.followups' }}" href="{{ url_for('patient.followups') }}"><i class="bi bi-arrow-repeat"></i>Follow-ups</a>
+  <a class="side-link {{ 'active' if request.endpoint == 'patient.history' }}" href="{{ url_for('patient.history') }}"><i class="bi bi-journal-medical"></i>Health records</a>
+  <a class="side-link {{ 'active' if request.endpoint == 'patient.profile' }}" href="{{ url_for('patient.profile') }}"><i class="bi bi-person-vcard"></i>Profile</a>
+  {% else %}
+  <a class="side-link {{ 'active' if request.endpoint == 'doctor.dashboard' }}" href="{{ url_for('doctor.dashboard') }}"><i class="bi bi-grid-1x2"></i>Dashboard</a>
+  <a class="side-link {{ 'active' if request.endpoint == 'doctor.appointments' }}" href="{{ url_for('doctor.appointments') }}"><i class="bi bi-calendar2-week"></i>Appointments</a>
+  <a class="side-link {{ 'active' if request.endpoint in ['doctor.patients','doctor.patient_detail'] }}" href="{{ url_for('doctor.patients') }}"><i class="bi bi-people"></i>Patients</a>
+  <a class="side-link {{ 'active' if request.endpoint == 'doctor.timeline' }}" href="{{ url_for('doctor.timeline') }}"><i class="bi bi-activity"></i>Care timeline</a>
+  <a class="side-link {{ 'active' if request.endpoint == 'doctor.followups' }}" href="{{ url_for('doctor.followups') }}"><i class="bi bi-arrow-repeat"></i>Follow-ups</a>
+  <a class="side-link {{ 'active' if request.endpoint in ['doctor.diagnoses','doctor.diagnosis'] }}" href="{{ url_for('doctor.diagnoses') }}"><i class="bi bi-journal-medical"></i>Diagnosis records</a>
+  <a class="side-link {{ 'active' if request.endpoint == 'doctor.profile' }}" href="{{ url_for('doctor.profile') }}"><i class="bi bi-person-vcard"></i>Profile</a>
+  {% endif %}
+  <div class="sidebar-help"><div class="help-icon"><i class="bi bi-heart-pulse"></i></div><strong>Care, connected.</strong><p>Keep the details of care organized in one place.</p></div>
+</aside><main class="workspace"><div class="container-fluid page-container">
+{% else %}<main class="public-main">{% endif %}
+{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-stack">{% for category,message in messages %}<div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>{% endfor %}</div>{% endif %}{% endwith %}
+{% block content %}{% endblock %}
+{% if current_user %}</div></main></div>{% else %}</main><footer class="public-footer"><div class="container d-flex justify-content-between"><span>© {{ now_year }} MedTrack · Local demo</span><span><i class="bi bi-lock me-1"></i>Designed with privacy in mind</span></div></footer>{% endif %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script><script src="{{ url_for('static', filename='js/app.js') }}"></script>{% block scripts %}{% endblock %}
+</body></html>
